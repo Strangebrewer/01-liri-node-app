@@ -148,7 +148,7 @@ function newLiri(p1, p2) {
         console.log(parseMyString(data[firstNum]));
         console.log(data[secondNum]);
       }
-    })
+    });
   }
 }
 
