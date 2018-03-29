@@ -153,7 +153,7 @@ function newLiri(p1, p2) {
 }
 
 function parseMyString(obj) {
-  return Function("'use strict';return (" + obj + ")")();
+  return Function(`'use strict';return (${obj})`)();
 }
 
 function getTweets(p1, p2) {
