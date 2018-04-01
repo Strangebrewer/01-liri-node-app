@@ -17,7 +17,7 @@ inquirer.prompt([
   {
     type: "list",
     message: "Pick one:",
-    choices: ["new tweet", "get tweets", "spotify this song", "movie this", "do what it says"],
+    choices: ["new-tweet", "get-tweets", "spotify-this-song", "movie-this", "do-what-it-says"],
     name: "Action"
   }
 ]).then((response) => {
@@ -25,7 +25,7 @@ inquirer.prompt([
 });
 
 function newLiri(p1, p2) {
-  if (p1 === "new tweet") {
+  if (p1 === "new-tweet") {
     inquirer.prompt([
       {
         type: "input",
@@ -40,7 +40,7 @@ function newLiri(p1, p2) {
         });
       });
   }
-  else if (p1 === "get tweets") {
+  else if (p1 === "get-tweets") {
     inquirer.prompt([
       {
         type: "list",
@@ -75,7 +75,7 @@ function newLiri(p1, p2) {
         }
       });
   }
-  else if (p1 === "spotify this song") {
+  else if (p1 === "spotify-this-song") {
     if (p2) {
       spotify.search({ type: 'track', query: p2, limit: 1 }, (error, data) => {
         getSongInfo(error, data);
@@ -108,7 +108,7 @@ function newLiri(p1, p2) {
         });
     }
   }
-  else if (p1 === "movie this") {
+  else if (p1 === "movie-this") {
     if (p2) {
       request(`http://www.omdbapi.com/?t=${p2}&y=&plot=short&apikey=6da7fe52`, (error, response, body) => {
         getMovieData(error, response, body);
@@ -137,23 +137,19 @@ function newLiri(p1, p2) {
         });
     }
   }
-  else if (p1 === "do what it says") {
+  else if (p1 === "do-what-it-says") {
     fs.readFile("random.txt", "utf8", (error, data) => {
       if (error) console.log(error);
       else {
         data = data.split(", ");
         var firstNum = Math.floor(Math.random() * ((data.length - 1) / 2)) * 2;
         var secondNum = firstNum + 1;
-        newLiri(parseMyString(data[firstNum]), data[secondNum]);
-        console.log(parseMyString(data[firstNum]));
+        newLiri(data[firstNum], data[secondNum]);
+        console.log(data[firstNum]);
         console.log(data[secondNum]);
       }
     });
   }
-}
-
-function parseMyString(obj) {
-  return Function(`'use strict';return (${obj})`)();
 }
 
 function getTweets(p1, p2) {
@@ -221,71 +217,3 @@ function appendSongToLog(p1) {
   fs.appendFile("log.txt", `Album name: ${p1.album.name}, `, (err) => { if (err) return console.log(err) });
   fs.appendFile("log.txt", `Spotify preview: ${p1.preview_url}, `, (err) => { if (err) return console.log(err) });
 }
-
-// function runLiri(p1, p2) {
-//   switch (p1) {
-//     case `new-tweet`:
-//       client.post('statuses/update', { status: p2 }, (error, tweet, response) => {
-//         if (error) console.log(error);
-//         console.log(tweet.text);
-//       });
-//       break;
-
-//     case `my-tweets`:
-//       client.get('statuses/user_timeline', { screen_name: 'NarfBrains', count: 20 }, (error, tweets, response) => {
-//         if (error) console.log(error);
-//         fs.appendFile("log.txt", `My Last Twenty Tweets: `, (err) => { if (err) return console.log(err) });
-//         for (let i = 0; i < tweets.length; i++) {
-//           const element = tweets[i];
-//           console.log(element.created_at, ": ", element.text);
-//           fs.appendFile("log.txt", `${element.created_at}: ${element.text}, `, (err) => { if (err) return console.log(err) });
-//         }
-//       });
-//       break;
-
-//     case `spotify-this-song`:
-//       if (p2 === undefined) {
-//         spotify.search({ type: 'track', query: 'The Sign', limit: 1 }, (error, data) => {
-//           getSongInfo(error, data, p1, p2);
-//         });
-//       }
-//       else {
-//         spotify.search({ type: 'track', query: p2, limit: 1 }, (error, data) => {
-//           getSongInfo(error, data, p1, p2);
-//         });
-//       }
-//       break;
-
-//     case `movie-this`:
-//       if (p2 === undefined) {
-//         request("http://www.omdbapi.com/?t=Mr+Nobody&y=&plot=short&apikey=6da7fe52", (error, response, body) => {
-//           getMovieData(error, response, body, p1, p2);
-//         });
-//       }
-//       else {
-//         request("http://www.omdbapi.com/?t=" + p2 + "&y=&plot=short&apikey=6da7fe52", (error, response, body) => {
-//           getMovieData(error, response, body, p1, p2);
-//         });
-//       }
-//       break;
-
-//     case `do-what-it-says`:
-//       fs.readFile("random.txt", "utf8", (error, data) => {
-//         if (error) console.log(error);
-//         else {
-//           data = data.split(", ");
-//           var firstNum = Math.floor(Math.random() * ((data.length - 1) / 2)) * 2;
-//           var secondNum = firstNum + 1;
-//           runLiri(data[firstNum], data[secondNum]);
-//           console.log(firstNum);
-//           console.log(secondNum);
-//           console.log(data[firstNum]);
-//           console.log(data[secondNum]);
-//         }
-//       })
-//       break;
-
-//     default:
-//       console.log("You must enter valid criteria");
-//   }
-// }
