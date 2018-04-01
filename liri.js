@@ -71,7 +71,7 @@ function newLiri(p1, p2) {
           getTweets(randomPerson, whoseTweets);
         }
         else {
-          getTweets('NarfBrains', "My");
+          getTweets("NarfBrains", "My");
         }
       });
   }
@@ -145,8 +145,6 @@ function newLiri(p1, p2) {
         var firstNum = Math.floor(Math.random() * ((data.length - 1) / 2)) * 2;
         var secondNum = firstNum + 1;
         newLiri(data[firstNum], data[secondNum]);
-        console.log(data[firstNum]);
-        console.log(data[secondNum]);
       }
     });
   }
@@ -160,7 +158,7 @@ function getTweets(p1, p2) {
       fs.appendFile("log.txt", `${p2} last twenty tweets: `, (err) => { if (err) return console.log(err) });
       for (let i = 0; i < tweets.length; i++) {
         const element = tweets[i];
-        console.log(element.created_at, ": ", element.text);
+        console.log(`${element.created_at}: ${element.text}`);
         fs.appendFile("log.txt", `${element.created_at}: ${element.text}, `, (err) => { if (err) return console.log(err) });
       }
     }
