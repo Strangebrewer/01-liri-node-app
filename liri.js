@@ -71,9 +71,9 @@ function newLiri(p1, p2) {
           getTweets(randomPerson, whoseTweets);
         }
         else {
-          getTweets("NarfBrains", "My");
+          getTweets(null, "My");
         }
-      });
+      })
   }
   else if (p1 === "spotify-this-song") {
     if (p2) {
@@ -123,7 +123,6 @@ function newLiri(p1, p2) {
         }
       ])
         .then((response) => {
-          console.log(response);
           if (response.Movie === "") {
             request(`http://www.omdbapi.com/?t=Mr+Nobody&y=&plot=short&apikey=6da7fe52`, (error, response, body) => {
               getMovieData(error, response, body);
@@ -135,7 +134,7 @@ function newLiri(p1, p2) {
             });
           }
         });
-    }
+    };
   }
   else if (p1 === "do-what-it-says") {
     fs.readFile("random.txt", "utf8", (error, data) => {
@@ -145,73 +144,87 @@ function newLiri(p1, p2) {
         var firstNum = Math.floor(Math.random() * ((data.length - 1) / 2)) * 2;
         var secondNum = firstNum + 1;
         newLiri(data[firstNum], data[secondNum]);
-      }
+      };
     });
-  }
+  };
 }
 
 function getTweets(p1, p2) {
-  client.get('statuses/user_timeline', { screen_name: p1, count: 20 }, (error, tweets, response) => {
-    if (error) console.log(error);
-    else {
+  client.get('statuses/user_timeline', { screen_name: p1 }, (error, tweets, response) => {
+    if (error) console.log(tweets.error);
+    else if (response.statusCode === 200 && tweets.length > 0) {
       console.log(`${p2} last twenty tweets: `);
       fs.appendFile("log.txt", `${p2} last twenty tweets: `, (err) => { if (err) return console.log(err) });
       for (let i = 0; i < tweets.length; i++) {
         const element = tweets[i];
         console.log(`${element.created_at}: ${element.text}`);
-        fs.appendFile("log.txt", `${element.created_at}: ${element.text}, `, (err) => { if (err) return console.log(err) });
-      }
+        fs.appendFile("log.txt", `\n${element.created_at}: ${element.text}, `, (err) => { if (err) return console.log(err) });
+      };
+      fs.appendFile("log.txt", `\n-------------------------\n`, (err) => { if (err) return console.log(err) });
     }
+    else {
+      console.log("There are no tweets for that user name.");
+    };
   });
 }
 
 function getSongInfo(error, data) {
   if (error) console.log(error);
-  else if (data.tracks.total === 0) console.log("We have no track that fits your search parameters.");
+  else if (data.tracks.total === 0) return console.log("We have no track that fits your search parameters.");
   else {
     const searchData = data.tracks;
     for (let i = 0; i < searchData.items.length; i++) {
       const element = searchData.items[i];
-      console.log(`Artist(s): ${element.artists[0].name}`);
-      console.log(`Song name: ${element.name}`);
-      console.log(`Album name: ${element.album.name}`);
-      console.log(`Spotify preview: ${element.preview_url}`);
-      console.log("");
+      console.log(
+        `Artist(s): ${element.artists[0].name}`,
+        `\nSong name: ${element.name}`,
+        `\nAlbum name: ${element.album.name}`,
+        `\nSpotify preview: ${element.preview_url}`
+      );
       appendSongToLog(element);
-    }
-  }
+    };
+  };
 }
 
 function getMovieData(error, response, body) {
   if (error) console.log(error);
+  var movie = JSON.parse(body);
+  if (movie.Response === 'False') return console.log(movie.Error);
   else if (!error && response.statusCode === 200) {
-    var movie = JSON.parse(body);
-    console.log(`Title: ${movie.Title}`);
-    console.log(`Release Date: ${movie.Year}`);
-    console.log(`IMDB Rating: ${movie.imdbRating}`);
-    console.log(`Rotten Tomatoes Rating: ${movie.Ratings[1].Value}`);
-    console.log(`Country of Origin: ${movie.Country}`);
-    console.log(`Language: ${movie.Language}`);
-    console.log(`Plot Synopsis: ${movie.Plot}`);
-    console.log(`Starring: ${movie.Actors}`);
-    appendMovieToLog(movie);
-  }
+    console.log(
+      `Title: ${movie.Title}`,
+      `\nRelease Date: ${movie.Year}`,
+      `\nIMDB Rating: ${movie.imdbRating}`,
+      `\nRotten Tomatoes Rating: ${movie.Ratings[1].Value}`,
+      `\nCountry of Origin: ${movie.Country}`,
+      `\nLanguage: ${movie.Language}`,
+      `\nPlot Synopsis: ${movie.Plot}`,
+      `\nStarring: ${movie.Actors}`
+    );
+  };
+  appendMovieToLog(movie);
 }
 
 function appendMovieToLog(p1) {
-  fs.appendFile("log.txt", `Title: ${p1.Title}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Release Date: ${p1.Year}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `IMDB Rating: ${p1.imdbRating}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Rotten Tomatoes Rating: ${p1.Ratings[1].Value}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Country of Origin: ${p1.Country}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Language: ${p1.Language}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Plot Synopsis: ${p1.Plot}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Starring: ${p1.Actors}, `, (err) => { if (err) return console.log(err) });
+  fs.appendFile("log.txt", [
+    `Title: ${p1.Title}`,
+    `\nRelease Date: ${p1.Year}`,
+    `\nIMDB Rating: ${p1.imdbRating}`,
+    `\nRotten Tomatoes Rating: ${p1.Ratings[1].Value}`,
+    `\nCountry of Origin: ${p1.Country}`,
+    `\nLanguage: ${p1.Language}`,
+    `\nPlot Synopsis: ${p1.Plot}`,
+    `\nStarring: ${p1.Actors}`,
+    `\n-------------------------\n`
+  ], (err) => { if (err) return console.log(err) });
 }
 
 function appendSongToLog(p1) {
-  fs.appendFile("log.txt", `Artist(s): ${p1.artists[0].name}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Song name: ${p1.name}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Album name: ${p1.album.name}, `, (err) => { if (err) return console.log(err) });
-  fs.appendFile("log.txt", `Spotify preview: ${p1.preview_url}, `, (err) => { if (err) return console.log(err) });
+  fs.appendFile("log.txt", [
+    `Artist(s): ${p1.artists[0].name}`,
+    `\nSong name: ${p1.name}`,
+    `\nAlbum name: ${p1.album.name}`,
+    `\nSpotify preview: ${p1.preview_url}`,
+    `\n-------------------------\n`
+  ], (err) => { if (err) return console.log(err) });
 }
