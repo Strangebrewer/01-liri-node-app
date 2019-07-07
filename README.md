@@ -1,4 +1,4 @@
-# 01-liri-node-app
+# Liri
   
 ## Table of contents
   
